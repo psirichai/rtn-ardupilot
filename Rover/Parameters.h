@@ -230,6 +230,16 @@ public:
         // 254,255: reserved
 
         k_param_vehicle = 257, // vehicle common block of parameters
+
+        k_param_cust_trim_mult = 258,
+        k_param_cust_trim_off,
+        k_param_cust_bat_mult,
+        k_param_cust_bat_off,
+        k_param_cust_rudd_mult,
+        k_param_cust_rudd_off,
+        k_param_cust_fuel_mult,
+        k_param_cust_fuel_off,
+
         };
 
     AP_Int16    format_version;
@@ -239,6 +249,17 @@ public:
     AP_Int32    log_bitmask;
     AP_Int8     reset_switch_chan;
     AP_Int8     initial_mode;
+
+    // Custom Boat Parameters
+    AP_Float    cust_trim_mult;
+    AP_Float    cust_trim_off;
+    AP_Float    cust_bat_mult;
+    AP_Float    cust_bat_off;
+    AP_Float    cust_rudd_mult;
+    AP_Float    cust_rudd_off;
+    AP_Float    cust_fuel_mult;
+    AP_Float    cust_fuel_off;
+
 
     // Telemetry control
     //

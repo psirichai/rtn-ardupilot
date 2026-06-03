@@ -60,6 +60,8 @@ public:
 #if AP_RPM_SIM_ENABLED
         RPM_TYPE_SITL   = 10,
 #endif
+        RPM_TYPE_ABLIC   = 11,
+
     };
 
     // The RPM_State structure is filled in by the backend driver
