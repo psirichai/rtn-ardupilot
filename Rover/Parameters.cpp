@@ -64,6 +64,15 @@ const AP_Param::Info Rover::var_info[] = {
     // @User: Standard
     GSCALAR(cust_fuel_off, "CUST_FUEL_OFF", 0.0f),
 
+    // @Param: CUST_TLM_DELY
+    // @DisplayName: Custom Telemetry Delay
+    // @Description: Delay in ms between staggering custom MAVLink telemetry variables to QGC
+    // @Range: 50 2000
+    // @Units: ms
+    // @User: Standard
+    GSCALAR(cust_tlm_dely, "CUST_TLM_DELY", 200),
+
+
     // @Param: FORMAT_VERSION
     // @DisplayName: Eeprom format version number
     // @Description: This value is incremented when changes are made to the eeprom format

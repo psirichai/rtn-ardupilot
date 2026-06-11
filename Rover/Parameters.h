@@ -239,6 +239,7 @@ public:
         k_param_cust_rudd_off,
         k_param_cust_fuel_mult,
         k_param_cust_fuel_off,
+        k_param_cust_tlm_dely,
 
         };
 
@@ -259,6 +260,7 @@ public:
     AP_Float    cust_rudd_off;
     AP_Float    cust_fuel_mult;
     AP_Float    cust_fuel_off;
+    AP_Int16    cust_tlm_dely;
 
 
     // Telemetry control

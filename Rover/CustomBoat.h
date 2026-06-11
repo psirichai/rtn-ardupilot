@@ -43,6 +43,7 @@ private:
     uint8_t _lights_status;
     uint8_t _trim_status;
     uint8_t _telem_step;
+    uint32_t _last_telem_ms;
 
     // reads ADS1115 analog values and applies parameters
     void read_ads1115();
