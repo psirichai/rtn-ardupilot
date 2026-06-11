@@ -47,6 +47,10 @@ void AP_RPM_ABLIC::_timer(void)
         state.rate_rpm = rpm;
         state.last_reading_ms = AP_HAL::millis();
         state.signal_quality = 1.0f;
+    } else {
+        state.rate_rpm = -999.0f;
+        state.last_reading_ms = AP_HAL::millis();
+        state.signal_quality = 0.0f;
     }
 }
 

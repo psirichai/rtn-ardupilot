@@ -7,12 +7,12 @@ CustomBoat custom_boat;
 extern const AP_HAL::HAL& hal;
 
 CustomBoat::CustomBoat() :
-    _trim_angle(0.0f),
-    _battery_voltage(0.0f),
-    _rudder_angle(0.0f),
-    _fuel_level(0.0f),
-    _lights_status(0),
-    _trim_status(0),
+    _trim_angle(-999.0f),
+    _battery_voltage(-999.0f),
+    _rudder_angle(-999.0f),
+    _fuel_level(-999.0f),
+    _lights_status(-999.0f),
+    _trim_status(-999.0f),
     _telem_step(0),
     _last_telem_ms(0)
 {
@@ -37,6 +37,10 @@ void CustomBoat::init()
 
     if (_dev_ads1115) {
         _dev_ads1115->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&CustomBoat::_timer, void));
+    } else if (_dev_tca9534_a) {
+        _dev_tca9534_a->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&CustomBoat::_timer, void));
+    } else if (_dev_tca9534_b) {
+        _dev_tca9534_b->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&CustomBoat::_timer, void));
     }
 }
 
@@ -66,18 +70,17 @@ void CustomBoat::read_ads1115()
             int16_t raw_val = (rx_buf[0] << 8) | rx_buf[1];
 
             switch (ads_ch) {
-                case 0:
-                    _trim_angle = (raw_val * rover.g.cust_trim_mult.get()) + rover.g.cust_trim_off.get();
-                    break;
-                case 1:
-                    _battery_voltage = (raw_val * rover.g.cust_bat_mult.get()) + rover.g.cust_bat_off.get();
-                    break;
-                case 2:
-                    _rudder_angle = (raw_val * rover.g.cust_rudd_mult.get()) + rover.g.cust_rudd_off.get();
-                    break;
-                case 3:
-                    _fuel_level = (raw_val * rover.g.cust_fuel_mult.get()) + rover.g.cust_fuel_off.get();
-                    break;
+                case 0: _trim_angle = (raw_val * rover.g.cust_trim_mult.get()) + rover.g.cust_trim_off.get(); break;
+                case 1: _battery_voltage = (raw_val * rover.g.cust_bat_mult.get()) + rover.g.cust_bat_off.get(); break;
+                case 2: _rudder_angle = (raw_val * rover.g.cust_rudd_mult.get()) + rover.g.cust_rudd_off.get(); break;
+                case 3: _fuel_level = (raw_val * rover.g.cust_fuel_mult.get()) + rover.g.cust_fuel_off.get(); break;
+            }
+        } else {
+            switch (ads_ch) {
+                case 0: _trim_angle = -999.0f; break;
+                case 1: _battery_voltage = -999.0f; break;
+                case 2: _rudder_angle = -999.0f; break;
+                case 3: _fuel_level = -999.0f; break;
             }
         }
 
@@ -92,54 +95,6 @@ void CustomBoat::_timer()
     read_ads1115();
     read_lights_status();
     handle_trim();
-
-    // Check if it is time to send the next telemetry variable
-    uint32_t now = AP_HAL::millis();
-    uint16_t delay_ms = rover.g.cust_tlm_dely.get();
-
-    if ((now - _last_telem_ms) >= delay_ms) {
-        _last_telem_ms = now;
-
-        float rpm_val = 0.0f;
-#if AP_RPM_ENABLED
-        auto *rpm = AP::rpm();
-        if (rpm) {
-            rpm->get_rpm(0, rpm_val); // Get instance 0 RPM
-        }
-#endif
-
-        switch (_telem_step) {
-            case 0:
-                gcs().send_named_float("TRIM_ANG", _trim_angle);
-                break;
-            case 1:
-                gcs().send_named_float("RUDD_ANG", _rudder_angle);
-                break;
-            case 2:
-                gcs().send_named_float("BAT_VOLT", _battery_voltage);
-                break;
-            case 3:
-                gcs().send_named_float("FUEL_LVL", _fuel_level);
-                break;
-            case 4:
-                gcs().send_named_float("LGT_STAT", (float)_lights_status);
-                break;
-            case 5:
-                gcs().send_named_float("TRM_STAT", (float)_trim_status);
-                break;
-            case 6:
-                gcs().send_named_float("ENG_RPM", rpm_val);
-                break;
-            case 7:
-                gcs().send_named_float("DUMMY_VAR", 0.0f); // 8th variable as requested
-                break;
-        }
-
-        _telem_step++;
-        if (_telem_step > 7) {
-            _telem_step = 0;
-        }
-    }
 }
 
 
@@ -154,6 +109,8 @@ void CustomBoat::read_lights_status()
     uint8_t rx_buf[1];
     if (_dev_tca9534_b->transfer(&reg, 1, rx_buf, 1)) {
         _lights_status = rx_buf[0];
+    } else {
+        _lights_status = -999.0f;
     }
 }
 
@@ -184,10 +141,58 @@ void CustomBoat::handle_trim()
     uint8_t rx_buf[1];
     if (_dev_tca9534_a->transfer(&reg, 1, rx_buf, 1)) {
         _trim_status = (rx_buf[0] >> 4) & 0x03; // shift to get Ch4, Ch5 at bit 0, 1
+    } else {
+        _trim_status = -999.0f;
     }
 }
 
 void CustomBoat::update()
 {
-    // Telemetry staggered in background _timer()
+    // Check if it is time to send the next telemetry variable
+    uint32_t now = AP_HAL::millis();
+    uint16_t delay_ms = rover.g.cust_tlm_dely.get();
+
+    if ((now - _last_telem_ms) >= delay_ms) {
+        _last_telem_ms = now;
+
+        float rpm_val = 0.0f;
+#if AP_RPM_ENABLED
+        auto *rpm = AP::rpm();
+        if (rpm) {
+            rpm->get_rpm(0, rpm_val); // Get instance 0 RPM
+        }
+#endif
+
+        switch (_telem_step) {
+            case 0:
+                gcs().send_named_float("TRIM_ANG", _trim_angle);
+                break;
+            case 1:
+                gcs().send_named_float("RUDD_ANG", _rudder_angle);
+                break;
+            case 2:
+                gcs().send_named_float("BAT_VOLT", _battery_voltage);
+                break;
+            case 3:
+                gcs().send_named_float("FUEL_LVL", _fuel_level);
+                break;
+            case 4:
+                gcs().send_named_float("LGT_STAT", _lights_status);
+                break;
+            case 5:
+                gcs().send_named_float("TRM_STAT", _trim_status);
+                break;
+            case 6:
+                gcs().send_named_float("ENG_RPM", rpm_val);
+                break;
+            case 7:
+                gcs().send_named_float("DUMMY_VAR", 0.0f); // 8th variable as requested
+                break;
+        }
+
+        _telem_step++;
+        if (_telem_step > 7) {
+            _telem_step = 0;
+        }
+    }
 }

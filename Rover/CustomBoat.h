@@ -27,8 +27,8 @@ public:
     float get_rudder_angle() const { return _rudder_angle; }
     float get_fuel_level() const { return _fuel_level; }
 
-    uint8_t get_lights_status() const { return _lights_status; }
-    uint8_t get_trim_status() const { return _trim_status; }
+    float get_lights_status() const { return _lights_status; }
+    float get_trim_status() const { return _trim_status; }
 
 private:
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev_ads1115;
@@ -40,8 +40,8 @@ private:
     float _rudder_angle;
     float _fuel_level;
 
-    uint8_t _lights_status;
-    uint8_t _trim_status;
+    float _lights_status;
+    float _trim_status;
     uint8_t _telem_step;
     uint32_t _last_telem_ms;
 

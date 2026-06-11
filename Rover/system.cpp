@@ -1,4 +1,5 @@
 #include "Rover.h"
+#include "CustomBoat.h"
 
 static void failsafe_check_static()
 {
@@ -7,6 +8,10 @@ static void failsafe_check_static()
 
 void Rover::init_ardupilot()
 {
+
+    // Initialize Custom Boat hardware
+    custom_boat.init();
+
     // initialise notify system
     notify.init();
     notify_mode(control_mode);
