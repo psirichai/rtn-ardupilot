@@ -14,35 +14,25 @@ CustomBoat::CustomBoat() :
     _lights_status(0),
     _trim_status(0)
 {
-    // Initialize I2C devices on Bus 1
-    // ADS1115 Address: 1001000b = 0x48
+}
+
+void CustomBoat::init()
+{
+    // Initialize I2C devices on Bus 1 safely after HAL boot
     _dev_ads1115 = std::move(hal.i2c_mgr->get_device(1, 0x48));
-
-    // TCA9534 Expander A (Trim): 001b (assume base 0x20 + 0x01 = 0x21 or 0x39 depending on variant, assuming 0x21 here based on A/no-A variant)
-    // For standard TCA9534 base address is 0x38, +1 = 0x39
     _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(1, 0x39));
-
-    // TCA9534 Expander B (Lights): 000b -> 0x38
     _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x38));
 
     if (_dev_tca9534_a) {
-        // Configure Expander A (Trim)
-        // Ch0, 1 as Output (Trim up/down), Ch4, 5 as Input (Status)
-        // Direction register 0x03. 1 = input, 0 = output.
-        // 0b11111100 = 0xFC (Pins 0,1 output, others input)
         uint8_t config_a[2] = {0x03, 0xFC};
         _dev_tca9534_a->transfer(config_a, 2, nullptr, 0);
     }
 
     if (_dev_tca9534_b) {
-        // Configure Expander B (Lights Status)
-        // All inputs. 0xFF.
         uint8_t config_b[2] = {0x03, 0xFF};
         _dev_tca9534_b->transfer(config_b, 2, nullptr, 0);
     }
 
-    // Register background thread for I2C polling at 5Hz to give it enough time for ADS1115 conversions
-    // 200000us = 5Hz
     if (_dev_ads1115) {
         _dev_ads1115->register_periodic_callback(200000, FUNCTOR_BIND_MEMBER(&CustomBoat::_timer, void));
     }

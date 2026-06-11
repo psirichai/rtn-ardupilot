@@ -7,6 +7,9 @@ class CustomBoat
 public:
     CustomBoat();
 
+    // init called safely after HAL is ready
+    void init();
+
     // called at 1Hz from main loop
     void update();
 
