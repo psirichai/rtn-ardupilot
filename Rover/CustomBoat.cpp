@@ -22,8 +22,8 @@ void CustomBoat::init()
 {
     // Initialize I2C devices on Bus 1 safely after HAL boot
     _dev_ads1115 = std::move(hal.i2c_mgr->get_device(1, 0x48));
-    _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(1, 0x39));
-    _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x38));
+    _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(1, 0x21));
+    _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x20));
 
     if (_dev_tca9534_a) {
         uint8_t config_a[2] = {0x03, 0xFC};
