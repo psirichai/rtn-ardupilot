@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AP_HAL/AP_HAL.h>
+#include <AP_RPM/AP_RPM.h>
 
 class CustomBoat
 {
@@ -41,6 +42,7 @@ private:
 
     uint8_t _lights_status;
     uint8_t _trim_status;
+    uint8_t _telem_step;
 
     // reads ADS1115 analog values and applies parameters
     void read_ads1115();

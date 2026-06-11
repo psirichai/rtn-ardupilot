@@ -12,7 +12,8 @@ CustomBoat::CustomBoat() :
     _rudder_angle(0.0f),
     _fuel_level(0.0f),
     _lights_status(0),
-    _trim_status(0)
+    _trim_status(0),
+    _telem_step(0)
 {
 }
 
@@ -90,6 +91,43 @@ void CustomBoat::_timer()
     read_ads1115();
     read_lights_status();
     handle_trim();
+
+    // Stagger telemetry to avoid overflowing MAVLink UART buffers
+    // 5Hz loop means we send 1 or 2 messages per tick, completing cycle in ~1 second.
+    float rpm_val = 0.0f;
+#if AP_RPM_ENABLED
+    auto *rpm = AP::rpm();
+    if (rpm) {
+        rpm->get_rpm(0, rpm_val); // Get instance 0 RPM
+    }
+#endif
+
+    switch (_telem_step) {
+        case 0:
+            gcs().send_named_float("TRIM_ANG", _trim_angle);
+            break;
+        case 1:
+            gcs().send_named_float("RUDD_ANG", _rudder_angle);
+            break;
+        case 2:
+            gcs().send_named_float("BAT_VOLT", _battery_voltage);
+            break;
+        case 3:
+            gcs().send_named_float("FUEL_LVL", _fuel_level);
+            break;
+        case 4:
+            gcs().send_named_float("LGT_STAT", (float)_lights_status);
+            gcs().send_named_float("TRM_STAT", (float)_trim_status);
+            break;
+        case 5:
+            gcs().send_named_float("ENG_RPM", rpm_val);
+            break;
+    }
+
+    _telem_step++;
+    if (_telem_step > 5) {
+        _telem_step = 0;
+    }
 }
 
 
@@ -139,11 +177,5 @@ void CustomBoat::handle_trim()
 
 void CustomBoat::update()
 {
-    // Broadcast MAVLink Telemetry
-    gcs().send_named_float("TRIM_ANG", _trim_angle);
-    gcs().send_named_float("RUDD_ANG", _rudder_angle);
-    gcs().send_named_float("BAT_VOLT", _battery_voltage);
-    gcs().send_named_float("FUEL_LVL", _fuel_level);
-    gcs().send_named_float("LGT_STAT", (float)_lights_status);
-    gcs().send_named_float("TRM_STAT", (float)_trim_status);
+    // Telemetry staggered in background _timer()
 }
