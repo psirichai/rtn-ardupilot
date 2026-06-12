@@ -91,13 +91,6 @@ void AP_RPM::init(void)
             // PWM option same as PIN option, for upgrade
             drivers[i] = NEW_NOTHROW AP_RPM_Pin(*this, i, state[i]);
             break;
-
-#if AP_RPM_ENABLED
-        case RPM_TYPE_ABLIC:
-            drivers[i] = new AP_RPM_ABLIC(*this, i, state[i]);
-            break;
-#endif
-
 #endif  // AP_RPM_PIN_ENABLED
 #if AP_RPM_ESC_TELEM_ENABLED
         case RPM_TYPE_ESC_TELEM:
