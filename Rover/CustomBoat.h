@@ -36,6 +36,7 @@ private:
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev_tca9534_b; // Expander B (Lights)
 
     float _trim_angle;
+    uint16_t _trim_pwm;
     float _battery_voltage;
     float _rudder_angle;
     float _fuel_level;

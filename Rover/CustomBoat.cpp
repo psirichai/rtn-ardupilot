@@ -8,6 +8,7 @@ extern const AP_HAL::HAL& hal;
 
 CustomBoat::CustomBoat() :
     _trim_angle(-999.0f),
+    _trim_pwm(1500),
     _battery_voltage(-999.0f),
     _rudder_angle(-999.0f),
     _fuel_level(-999.0f),
@@ -120,15 +121,12 @@ void CustomBoat::handle_trim()
         return;
     }
 
-    // 1. Read RC Channel 8 for Trim Commands
-    // 1000-1400: Trim Down, 1400-1600: Neutral, 1600-2000: Trim Up
-    uint16_t ch8_pwm = hal.rcin->read(7); // 0-indexed
-
+    // 1. Read RC Channel 8 for Trim Commands using cached value
     uint8_t out_val = 0x00; // default both off (assuming active high for relays)
 
-    if (ch8_pwm > 1600) {
+    if (_trim_pwm > 1600) {
         out_val |= 0x01; // Ch 0 High (Trim Up)
-    } else if (ch8_pwm < 1400 && ch8_pwm > 900) {
+    } else if (_trim_pwm < 1400 && _trim_pwm > 900) {
         out_val |= 0x02; // Ch 1 High (Trim Down)
     }
 
@@ -148,6 +146,9 @@ void CustomBoat::handle_trim()
 
 void CustomBoat::update()
 {
+    // Safely read RC input on the main scheduler thread
+    _trim_pwm = hal.rcin->read(7);
+
     // Check if it is time to send the next telemetry variable
     uint32_t now = AP_HAL::millis();
     uint16_t delay_ms = rover.g.cust_tlm_dely.get();
