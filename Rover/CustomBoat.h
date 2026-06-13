@@ -30,7 +30,14 @@ public:
     float get_lights_status() const { return _lights_status; }
     float get_trim_status() const { return _trim_status; }
 
+
+    // Command from MAVLink
+    void set_trim_command(uint8_t cmd);
+
 private:
+    uint8_t _trim_cmd; // 0=NONE, 1=UP, 2=DOWN
+    uint32_t _last_trim_cmd_ms;
+
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev_ads1115;
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev_tca9534_a; // Expander A (Trim)
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev_tca9534_b; // Expander B (Lights)

@@ -15,7 +15,9 @@ CustomBoat::CustomBoat() :
     _lights_status(-999.0f),
     _trim_status(-999.0f),
     _telem_step(0),
-    _last_telem_ms(0)
+    _last_telem_ms(0),
+    _trim_cmd(0),
+    _last_trim_cmd_ms(0)
 {
 }
 
@@ -27,7 +29,7 @@ void CustomBoat::init()
     _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x20));
 
     if (_dev_tca9534_a) {
-        uint8_t config_a[2] = {0x03, 0xFC};
+        uint8_t config_a[2] = {0x03, 0xCF};
         _dev_tca9534_a->transfer(config_a, 2, nullptr, 0);
     }
 
@@ -121,13 +123,22 @@ void CustomBoat::handle_trim()
         return;
     }
 
-    // 1. Read RC Channel 8 for Trim Commands using cached value
-    uint8_t out_val = 0x00; // default both off (assuming active high for relays)
+    // 1. Determine Trim Commands (From MAV_CMD_USER_1 with 1s timeout)
+    uint8_t out_val = 0x00; // default both off
 
-    if (_trim_pwm > 1600) {
-        out_val |= 0x01; // Ch 0 High (Trim Up)
-    } else if (_trim_pwm < 1400 && _trim_pwm > 900) {
-        out_val |= 0x02; // Ch 1 High (Trim Down)
+    if (AP_HAL::millis() - _last_trim_cmd_ms > 1000) {
+        _trim_cmd = 0; // Timeout, revert to NONE
+    }
+
+    if (_trim_cmd == 1) {
+        // TRIM_UP: Output 1 on Ch4, 0 on Ch5. Wait, the prompt says "trim up output is TCA9534 address 001 ch4. trim down output is TCA9534 address 001 ch5."
+        // Earlier the prompt said RC 8 controlled ch0 and ch1 as outputs and ch4/ch5 were inputs!
+        // The user says: "trim up output is TCA9534 address 001 ch4. trim down output is TCA9534 address 001 ch5. Trim up/down status reading is TCA9534 address 001 ch0-1."
+        // Oh! They swapped the physical pins from the first document. I need to update the direction register as well!
+        out_val |= 0x10; // Ch 4 High
+    } else if (_trim_cmd == 2) {
+        // TRIM_DOWN
+        out_val |= 0x20; // Ch 5 High
     }
 
     // Write to Output Port Register (0x01)
@@ -138,7 +149,7 @@ void CustomBoat::handle_trim()
     uint8_t reg = 0x00;
     uint8_t rx_buf[1];
     if (_dev_tca9534_a->transfer(&reg, 1, rx_buf, 1)) {
-        _trim_status = (rx_buf[0] >> 4) & 0x03; // shift to get Ch4, Ch5 at bit 0, 1
+        _trim_status = rx_buf[0] & 0x03; // read Ch0 and Ch1 directly
     } else {
         _trim_status = -999.0f;
     }
@@ -196,4 +207,11 @@ void CustomBoat::update()
             _telem_step = 0;
         }
     }
+}
+
+
+void CustomBoat::set_trim_command(uint8_t cmd)
+{
+    _trim_cmd = cmd;
+    _last_trim_cmd_ms = AP_HAL::millis();
 }

@@ -1,4 +1,5 @@
 #include "Rover.h"
+#include "CustomBoat.h"
 
 #include "GCS_Mavlink.h"
 
@@ -744,6 +745,10 @@ MAV_RESULT GCS_MAVLINK_Rover::_handle_command_preflight_calibration(const mavlin
 MAV_RESULT GCS_MAVLINK_Rover::handle_command_int_packet(const mavlink_command_int_t &packet, const mavlink_message_t &msg)
 {
     switch (packet.command) {
+
+    case MAV_CMD_USER_1:
+        custom_boat.set_trim_command((uint8_t)packet.param1);
+        return MAV_RESULT_ACCEPTED;
 
     case MAV_CMD_DO_CHANGE_SPEED:
         // param1 : unused
