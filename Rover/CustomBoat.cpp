@@ -28,14 +28,16 @@ void CustomBoat::init()
     _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(1, 0x21));
     _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x20));
 
-    if (_dev_tca9534_a) {
-        uint8_t config_a[2] = {0x03, 0xCF};
+    if (_dev_tca9534_a && _dev_tca9534_a->get_semaphore()->take(10)) {
+        uint8_t config_a[2] = {0x03, 0x0F};
         _dev_tca9534_a->transfer(config_a, 2, nullptr, 0);
+        _dev_tca9534_a->get_semaphore()->give();
     }
 
-    if (_dev_tca9534_b) {
+    if (_dev_tca9534_b && _dev_tca9534_b->get_semaphore()->take(10)) {
         uint8_t config_b[2] = {0x03, 0xFF};
         _dev_tca9534_b->transfer(config_b, 2, nullptr, 0);
+        _dev_tca9534_b->get_semaphore()->give();
     }
 
     if (_dev_ads1115) {
