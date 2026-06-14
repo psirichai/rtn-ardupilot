@@ -65,6 +65,7 @@
 #include <AP_CustomRotations/AP_CustomRotations.h>
 #include <AP_AIS/AP_AIS.h>
 #include <AP_NMEA_Output/AP_NMEA_Output.h>
+#include <AP_NMEAMux/AP_NMEAMux.h>
 #include <AC_Fence/AC_Fence.h>
 #include <AP_CheckFirmware/AP_CheckFirmware.h>
 #include <Filter/LowPassFilter.h>
@@ -459,6 +460,8 @@ protected:
 #if HAL_NMEA_OUTPUT_ENABLED
     AP_NMEA_Output nmea;
 #endif
+
+    AP_NMEAMux nmeamux;
 
 #if AP_KDECAN_ENABLED
     AP_KDECAN kdecan;

@@ -23,6 +23,7 @@
 #include "AP_WindVane_Analog.h"
 #include "AP_WindVane_ModernDevice.h"
 #include "AP_WindVane_Airspeed.h"
+#include "AP_WindVane_NMEAMux.h"
 #include "AP_WindVane_RPM.h"
 #include "AP_WindVane_SITL.h"
 #include "AP_WindVane_NMEA.h"
@@ -229,6 +230,10 @@ void AP_WindVane::init(const AP_SerialManager& serial_manager)
             _direction_driver->init(serial_manager);
             break;
 #endif
+        case WindVaneType::WINDVANE_NMEAMUX:
+            _direction_driver = NEW_NOTHROW AP_WindVane_NMEAMux(*this);
+            _direction_driver->init(serial_manager);
+            break;
     }
 
     // wind speed
@@ -267,6 +272,15 @@ void AP_WindVane::init(const AP_SerialManager& serial_manager)
             }
             break;
 #endif  // AP_WINDVANE_NMEA_ENABLED
+        case Speed_type::WINDSPEED_NMEAMUX:
+            // single driver does both speed and direction
+            if (_direction_type != WindVaneType::WINDVANE_NMEAMUX) {
+                _speed_driver = NEW_NOTHROW AP_WindVane_NMEAMux(*this);
+                _speed_driver->init(serial_manager);
+            } else {
+                _speed_driver = _direction_driver;
+            }
+            break;
 #if AP_WINDVANE_RPM_ENABLED
         case Speed_type::WINDSPEED_RPM:
             _speed_driver = NEW_NOTHROW AP_WindVane_RPM(*this);

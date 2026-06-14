@@ -46,6 +46,7 @@
 #include "AP_Baro_Dummy.h"
 #include "AP_Baro_DroneCAN.h"
 #include "AP_Baro_MSP.h"
+#include "AP_Baro_NMEAMux.h"
 #include "AP_Baro_ExternalAHRS.h"
 #include "AP_Baro_ICP101XX.h"
 #include "AP_Baro_ICP201XX.h"
@@ -520,6 +521,10 @@ bool AP_Baro::_have_i2c_driver(uint8_t bus, uint8_t address) const
 void AP_Baro::init(void)
 {
     init_done = true;
+
+    if (AP::serialmanager().have_serial(AP_SerialManager::SerialProtocol_NMEAMux, 0)) {
+        ADD_BACKEND(NEW_NOTHROW AP_Baro_NMEAMux(*this));
+    }
 
     // always set field elevation to zero on reboot in the case user
     // fails to update.  TBD automate sanity checking error bounds on

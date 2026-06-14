@@ -45,6 +45,7 @@ class AP_WindVane
     friend class AP_WindVane_Airspeed;
     friend class AP_WindVane_RPM;
     friend class AP_WindVane_NMEA;
+    friend class AP_WindVane_NMEAMux;
 
 public:
     AP_WindVane();
@@ -176,6 +177,7 @@ private:
 #if AP_WINDVANE_NMEA_ENABLED
         WINDVANE_NMEA           = 4,
 #endif
+        WINDVANE_NMEAMUX        = 5,
 #if AP_WINDVANE_SIM_ENABLED
         WINDVANE_SITL_TRUE      = 10,
         WINDVANE_SITL_APPARENT  = 11,
@@ -194,6 +196,7 @@ private:
 #if AP_WINDVANE_NMEA_ENABLED
         WINDSPEED_NMEA               = 4,
 #endif
+        WINDSPEED_NMEAMUX            = 5,
 #if AP_WINDVANE_SIM_ENABLED
         WINDSPEED_SITL_TRUE          = 10,
         WINDSPEED_SITL_APPARENT      = 11,

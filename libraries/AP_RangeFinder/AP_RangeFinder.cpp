@@ -39,6 +39,7 @@
 #include "AP_RangeFinder_VL53L0X.h"
 #include "AP_RangeFinder_VL53L1X.h"
 #include "AP_RangeFinder_NMEA.h"
+#include "AP_RangeFinder_NMEAMux.h"
 #include "AP_RangeFinder_Wasp.h"
 #include "AP_RangeFinder_Benewake_TF02.h"
 #include "AP_RangeFinder_Benewake_TF03.h"
@@ -454,6 +455,9 @@ void RangeFinder::detect_instance(uint8_t instance, uint8_t& serial_instance)
         serial_create_fn = AP_RangeFinder_NMEA::create;
         break;
 #endif
+    case Type::NMEAMUX:
+        _add_backend(NEW_NOTHROW AP_RangeFinder_NMEAMux(state[instance], params[instance]), instance);
+        break;
 #if AP_RANGEFINDER_WASP_ENABLED
     case Type::WASP:
         serial_create_fn = AP_RangeFinder_Wasp::create;

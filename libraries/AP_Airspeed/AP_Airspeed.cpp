@@ -51,6 +51,7 @@
 #include "AP_Airspeed_Backend.h"
 #include "AP_Airspeed_DroneCAN.h"
 #include "AP_Airspeed_NMEA.h"
+#include "AP_Airspeed_NMEAMux.h"
 #include "AP_Airspeed_MSP.h"
 #include "AP_Airspeed_External.h"
 #include "AP_Airspeed_SITL.h"
@@ -430,6 +431,9 @@ void AP_Airspeed::allocate()
             sensor[i] = NEW_NOTHROW AP_Airspeed_NMEA(*this, i);
 #endif
 #endif
+            break;
+        case TYPE_NMEAMUX:
+            sensor[i] = NEW_NOTHROW AP_Airspeed_NMEAMux(*this, i);
             break;
         case TYPE_MSP:
 #if AP_AIRSPEED_MSP_ENABLED

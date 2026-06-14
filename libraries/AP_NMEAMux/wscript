@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+def build(bld):
+    bld.ap_stlib(
+        name='AP_NMEAMux',
+        ap_vehicle='all',
+        ap_depends=[
+            'AP_HAL',
+            'AP_Math',
+            'AP_SerialManager'
+        ],
+    )
