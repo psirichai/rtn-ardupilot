@@ -7,6 +7,80 @@
 */
 
 const AP_Param::Info Rover::var_info[] = {
+
+    // @Param: CUST_TRIM_MULT
+    // @DisplayName: Custom Trim Multiplier
+    // @Description: Multiplier for custom trim angle from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_trim_mult, "CUST_TRIM_MULT", 1.0f),
+
+    // @Param: CUST_TRIM_OFF
+    // @DisplayName: Custom Trim Offset
+    // @Description: Offset for custom trim angle from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_trim_off, "CUST_TRIM_OFF", 0.0f),
+
+    // @Param: CUST_BAT_MULT
+    // @DisplayName: Custom Battery Multiplier
+    // @Description: Multiplier for custom battery voltage from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_bat_mult, "CUST_BAT_MULT", 1.0f),
+
+    // @Param: CUST_BAT_OFF
+    // @DisplayName: Custom Battery Offset
+    // @Description: Offset for custom battery voltage from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_bat_off, "CUST_BAT_OFF", 0.0f),
+
+    // @Param: CUST_RUDD_MULT
+    // @DisplayName: Custom Rudder Multiplier
+    // @Description: Multiplier for custom rudder angle from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_rudd_mult, "CUST_RUDD_MULT", 1.0f),
+
+    // @Param: CUST_RUDD_OFF
+    // @DisplayName: Custom Rudder Offset
+    // @Description: Offset for custom rudder angle from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_rudd_off, "CUST_RUDD_OFF", 0.0f),
+
+    // @Param: CUST_FUEL_MULT
+    // @DisplayName: Custom Fuel Multiplier
+    // @Description: Multiplier for custom fuel level from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_fuel_mult, "CUST_FUEL_MULT", 1.0f),
+
+    // @Param: CUST_FUEL_OFF
+    // @DisplayName: Custom Fuel Offset
+    // @Description: Offset for custom fuel level from ADS1115
+    // @Range: -100.0 100.0
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(cust_fuel_off, "CUST_FUEL_OFF", 0.0f),
+
+    // @Param: CUST_TLM_DELY
+    // @DisplayName: Custom Telemetry Delay
+    // @Description: Delay in ms between staggering custom MAVLink telemetry variables to QGC
+    // @Range: 50 2000
+    // @Units: ms
+    // @User: Standard
+    GSCALAR(cust_tlm_dely, "CUST_TLM_DELY", 200),
+
+
     // @Param: FORMAT_VERSION
     // @DisplayName: Eeprom format version number
     // @Description: This value is incremented when changes are made to the eeprom format

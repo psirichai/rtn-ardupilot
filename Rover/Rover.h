@@ -77,6 +77,8 @@
 class Rover : public AP_Vehicle {
 public:
     friend class GCS_MAVLINK_Rover;
+    friend class CustomBoat;
+
     friend class Parameters;
     friend class ParametersG2;
     friend class AP_Rally_Rover;

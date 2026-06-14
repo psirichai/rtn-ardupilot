@@ -14,6 +14,8 @@
  */
 
 #include "AP_RPM.h"
+#include "AP_RPM_ABLIC.h"
+
 
 #if AP_RPM_ENABLED
 
@@ -118,6 +120,10 @@ void AP_RPM::init(void)
             break;
 #endif // AP_RPM_DRONECAN_ENABLED
 #if AP_RPM_SIM_ENABLED
+
+        case RPM_TYPE_ABLIC:
+            drivers[i] = new AP_RPM_ABLIC(*this, i, state[i]);
+            break;
         case RPM_TYPE_SITL:
             drivers[i] = NEW_NOTHROW AP_RPM_SITL(*this, i, state[i]);
             break;
