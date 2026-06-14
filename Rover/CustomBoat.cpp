@@ -29,6 +29,11 @@ void CustomBoat::init()
     _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x20));
 
     if (_dev_tca9534_a && _dev_tca9534_a->get_semaphore()->take(10)) {
+        // Set outputs high (OFF for P-Channel) BEFORE changing direction to prevent flicker
+        uint8_t out_a[2] = {0x01, 0xF0};
+        _dev_tca9534_a->transfer(out_a, 2, nullptr, 0);
+
+        // Configure Ch4-7 as outputs (0), Ch0-3 as inputs (1)
         uint8_t config_a[2] = {0x03, 0x0F};
         _dev_tca9534_a->transfer(config_a, 2, nullptr, 0);
         _dev_tca9534_a->get_semaphore()->give();
@@ -126,21 +131,19 @@ void CustomBoat::handle_trim()
     }
 
     // 1. Determine Trim Commands (From MAV_CMD_USER_1 with 1s timeout)
-    uint8_t out_val = 0x00; // default both off
+    // P-Channel MOSFET logic: 1 is OFF, 0 is ON.
+    uint8_t out_val = 0xF0; // Default all outputs (Ch4,5,6,7) to 1 (OFF)
 
     if (AP_HAL::millis() - _last_trim_cmd_ms > 1000) {
         _trim_cmd = 0; // Timeout, revert to NONE
     }
 
     if (_trim_cmd == 1) {
-        // TRIM_UP: Output 1 on Ch4, 0 on Ch5. Wait, the prompt says "trim up output is TCA9534 address 001 ch4. trim down output is TCA9534 address 001 ch5."
-        // Earlier the prompt said RC 8 controlled ch0 and ch1 as outputs and ch4/ch5 were inputs!
-        // The user says: "trim up output is TCA9534 address 001 ch4. trim down output is TCA9534 address 001 ch5. Trim up/down status reading is TCA9534 address 001 ch0-1."
-        // Oh! They swapped the physical pins from the first document. I need to update the direction register as well!
-        out_val |= 0x10; // Ch 4 High
+        // TRIM_UP: Turn ON Trim Up (Ch4 = 0), Keep Trim Down OFF (Ch5 = 1)
+        out_val &= ~0x10; // Clear Ch4 bit
     } else if (_trim_cmd == 2) {
-        // TRIM_DOWN
-        out_val |= 0x20; // Ch 5 High
+        // TRIM_DOWN: Keep Trim Up OFF (Ch4 = 1), Turn ON Trim Down (Ch5 = 0)
+        out_val &= ~0x20; // Clear Ch5 bit
     }
 
     // Write to Output Port Register (0x01)
