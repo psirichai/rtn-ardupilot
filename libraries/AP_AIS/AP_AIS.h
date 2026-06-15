@@ -84,7 +84,7 @@ private:
     struct ais_vehicle_t {
         mavlink_ais_vessel_t info;
         uint32_t last_update_ms; // last time this was refreshed, allows timeouts
-        uint32_t last_send_ms; // last time this message was sent via mavlink, stops us spamming the link
+        uint32_t last_send_ms[MAVLINK_COMM_NUM_BUFFERS]; // last time this message was sent via mavlink, stops us spamming the link
     };
 
     // list of the vessels that are being tracked
@@ -92,7 +92,7 @@ private:
 
     AP_HAL::UARTDriver *_uart;
 
-    uint16_t _send_index; // index of the last vessel send over mavlink
+    uint16_t _send_index[MAVLINK_COMM_NUM_BUFFERS]; // index of the last vessel send over mavlink
 
     // Send a AIS vessel to the object avoidance data base if its position is valid
     void send_to_object_avoidance_database(const struct ais_vehicle_t &vessel);
