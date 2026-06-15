@@ -2,6 +2,7 @@ import serial
 import time
 import random
 import argparse
+import sys
 
 def encode_aivdm(mmsi, lat, lon, heading, speed):
     def int_to_bin(val, bits):
@@ -64,7 +65,7 @@ def main():
         ser = serial.Serial(args.port, args.baud)
     except serial.SerialException as e:
         print(f"Error opening serial port: {e}")
-        return
+        sys.exit(1)
 
     try:
         while True:
