@@ -257,17 +257,17 @@ void AP_AIS::send(mavlink_channel_t chan)
     const uint32_t now =  AP_HAL::millis();
     uint16_t search_length = 0;
     while (search_length < list_size) {
-        _send_index++;
+        _send_index[chan]++;
         search_length++;
-        if (_send_index == list_size) {
-            _send_index = 0;
+        if (_send_index[chan] >= list_size) {
+            _send_index[chan] = 0;
         }
-        if (_list[_send_index].last_update_ms != 0 &&
-            (_list[_send_index].last_send_ms < _list[_send_index].last_update_ms || now -_list[_send_index].last_send_ms > 30000)) {
+        if (_list[_send_index[chan]].last_update_ms != 0 &&
+            (_list[_send_index[chan]].last_send_ms[chan] < _list[_send_index[chan]].last_update_ms || now - _list[_send_index[chan]].last_send_ms[chan] > 30000)) {
                 // only re-send if there has been a change or the resend time has expired
-                _list[_send_index].last_send_ms = now;
-                _list[_send_index].info.tslc = (now - _list[_send_index].last_update_ms) * 0.001;
-                mavlink_msg_ais_vessel_send_struct(chan,&_list[_send_index].info);
+                _list[_send_index[chan]].last_send_ms[chan] = now;
+                _list[_send_index[chan]].info.tslc = (now - _list[_send_index[chan]].last_update_ms) * 0.001;
+                mavlink_msg_ais_vessel_send_struct(chan, &_list[_send_index[chan]].info);
                 return;
         }
     }
