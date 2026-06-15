@@ -60,7 +60,11 @@ def main():
 
     print(f"Starting AIS mock on {args.port} at {args.baud} baud...")
 
-    ser = serial.Serial(args.port, args.baud)
+    try:
+        ser = serial.Serial(args.port, args.baud)
+    except serial.SerialException as e:
+        print(f"Error opening serial port: {e}")
+        return
 
     try:
         while True:
@@ -71,13 +75,25 @@ def main():
             speed = random.uniform(5.0, 15.0)
 
             msg = encode_aivdm(mmsi, lat, lon, heading, speed)
-            print(f"Sending: {msg.decode('ascii').strip()}")
-            ser.write(msg)
+
+            decoded_msg = msg.decode('ascii').strip()
+            print(f"Sending: {decoded_msg}")
+
+            try:
+                ser.write(msg)
+                ser.flush()
+            except serial.SerialException as e:
+                print(f"Error writing to serial port: {e}")
+                break
 
             time.sleep(1.0 / args.rate)
     except KeyboardInterrupt:
-        print("Stopping mock.")
-        ser.close()
+        print("\nStopping mock.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    finally:
+        if ser.is_open:
+            ser.close()
 
 if __name__ == '__main__':
     main()
