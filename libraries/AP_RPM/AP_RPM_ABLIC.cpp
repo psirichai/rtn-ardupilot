@@ -32,14 +32,19 @@ void AP_RPM_ABLIC::_timer(void)
     }
 
     uint8_t rx_buf[3]; // The S-35770 outputs up to 24 bits
-    if (_dev->read_registers(0x00, rx_buf, sizeof(rx_buf))) {
+    // Use transfer with nullptr for send buffer to perform a pure I2C read
+    if (_dev->transfer(nullptr, 0, rx_buf, sizeof(rx_buf))) {
         // Parse the read data (format based on typical ABLIC S-35770 response)
         // Assume basic pulse count over the 1 second interval
         uint32_t count = (rx_buf[0] << 16) | (rx_buf[1] << 8) | rx_buf[2];
 
-        // Reset command (typically write a specific sequence or just writing 0 depending on precise datasheet)
-        uint8_t reset_cmd = 0x00;
-        _dev->transfer(&reset_cmd, 1, nullptr, 0);
+        // Reset command: send 4-byte sequence as per datasheet
+        // 1st byte: 0x81 (Address pointer and Test bit set)
+        // 2nd byte: 0x00 (Free register 1)
+        // 3rd byte: 0x00 (Free register 2)
+        // 4th byte: 0x02 (Free register 3: RST2=0, RST1=1, RST0=0)
+        uint8_t reset_cmd[4] = {0x81, 0x00, 0x00, 0x02};
+        _dev->transfer(reset_cmd, sizeof(reset_cmd), nullptr, 0);
 
         // Convert 1 second pulse count to RPM
         float rpm = count * 60.0f;
