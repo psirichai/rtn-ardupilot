@@ -301,6 +301,9 @@ extern AP_Vehicle& vehicle;
  */
 void AP_Vehicle::setup()
 {
+    // Wait for 1 second after bootup before starting ArduPilot initialization
+    hal.scheduler->delay(1000);
+
     // load the default values of variables listed in var_info[]
     AP_Param::setup_sketch_defaults();
 

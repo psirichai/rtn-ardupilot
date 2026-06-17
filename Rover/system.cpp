@@ -9,12 +9,6 @@ static void failsafe_check_static()
 void Rover::init_ardupilot()
 {
 
-    // Initialize Custom Boat hardware
-    custom_boat.init();
-
-    // initialise notify system
-    notify.init();
-    notify_mode(control_mode);
 
     battery.init();
 
@@ -39,9 +33,6 @@ void Rover::init_ardupilot()
     osd.init();
 #endif
 
-    // initialise compass
-    AP::compass().set_log_bit(MASK_LOG_COMPASS);
-    AP::compass().init();
 
 #if AP_AIRSPEED_ENABLED
     airspeed.set_log_bit(MASK_LOG_IMU);
@@ -159,6 +150,17 @@ void Rover::init_ardupilot()
     if (is_boat()) {
         rover.g2.mis_done_behave.set_default(uint8_t(ModeAuto::DoneBehaviour::LOITER));
     }
+
+    // Initialize Custom Boat hardware
+    custom_boat.init();
+
+    // initialise compass
+    AP::compass().set_log_bit(MASK_LOG_COMPASS);
+    AP::compass().init();
+
+    // initialise notify system
+    notify.init();
+    notify_mode(control_mode);
 
     // flag that initialisation has completed
     initialised = true;
