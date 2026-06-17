@@ -125,30 +125,30 @@ void AP_NMEAMux::process_sentence(void)
     const char *sentence_type = type + 3; // Skip talker ID, e.g., "WI" from "$WIMWV"
 
     // Black-listed Sentences
-    if (strcmp(sentence_type, "MTW") == 0 ||
-        strcmp(sentence_type, "GGA") == 0 ||
-        strcmp(sentence_type, "RMC") == 0 ||
-        strcmp(sentence_type, "ZDA") == 0 ||
-        strcmp(sentence_type, "HDG") == 0 ||
-        strcmp(sentence_type, "HDT") == 0 ||
-        strcmp(sentence_type, "ROT") == 0) {
+    if (strncmp(sentence_type, "MTW", 3) == 0 ||
+        strncmp(sentence_type, "GGA", 3) == 0 ||
+        strncmp(sentence_type, "RMC", 3) == 0 ||
+        strncmp(sentence_type, "ZDA", 3) == 0 ||
+        strncmp(sentence_type, "HDG", 3) == 0 ||
+        strncmp(sentence_type, "HDT", 3) == 0 ||
+        strncmp(sentence_type, "ROT", 3) == 0) {
         return;
     }
 
     // White-listed Sentences
-    if (strcmp(sentence_type, "MWV") == 0) {
+    if (strncmp(sentence_type, "MWV", 3) == 0) {
         decode_mwv(temp_buffer);
-    } else if (strcmp(sentence_type, "MWD") == 0) {
+    } else if (strncmp(sentence_type, "MWD", 3) == 0) {
         decode_mwd(temp_buffer);
-    } else if (strcmp(sentence_type, "MDA") == 0) {
+    } else if (strncmp(sentence_type, "MDA", 3) == 0) {
         decode_mda(temp_buffer);
-    } else if (strcmp(sentence_type, "XDR") == 0) {
+    } else if (strncmp(sentence_type, "XDR", 3) == 0) {
         decode_xdr(temp_buffer);
-    } else if (strcmp(sentence_type, "DPT") == 0) {
+    } else if (strncmp(sentence_type, "DPT", 3) == 0) {
         decode_dpt(temp_buffer);
-    } else if (strcmp(sentence_type, "DBT") == 0) {
+    } else if (strncmp(sentence_type, "DBT", 3) == 0) {
         decode_dbt(temp_buffer);
-    } else if (strcmp(sentence_type, "VHW") == 0) {
+    } else if (strncmp(sentence_type, "VHW", 3) == 0) {
         decode_vhw(temp_buffer);
     }
 }
