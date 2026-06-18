@@ -194,10 +194,10 @@ bool AP_NMEAMux::decode_mwd(const char *sentence)
     const char *dir_t_str = get_term(temp_sentence, 1);
     const char *speed_m_str = get_term(temp_sentence, 7);
 
-    if (dir_t_str && strlen(dir_t_str) > 0) {
+    if (dir_t_str && dir_t_str[0] != ',') {
         update_data(_wind_direction, strtof(dir_t_str, nullptr));
     }
-    if (speed_m_str && strlen(speed_m_str) > 0) {
+    if (speed_m_str && speed_m_str[0] != ',') {
         update_data(_wind_speed, strtof(speed_m_str, nullptr));
     }
 
@@ -213,11 +213,11 @@ bool AP_NMEAMux::decode_mda(const char *sentence)
     const char *press_bar_str = get_term(temp_sentence, 3);
     const char *temp_c_str = get_term(temp_sentence, 5);
 
-    if (press_bar_str && strlen(press_bar_str) > 0) {
+    if (press_bar_str && press_bar_str[0] != ',') {
         // convert bar to Pascals
         update_data(_barometric_pressure, strtof(press_bar_str, nullptr) * 100000.0f);
     }
-    if (temp_c_str && strlen(temp_c_str) > 0) {
+    if (temp_c_str && temp_c_str[0] != ',') {
         update_data(_air_temperature, strtof(temp_c_str, nullptr));
     }
 
@@ -262,7 +262,7 @@ bool AP_NMEAMux::decode_dpt(const char *sentence)
 
     const char *depth_str = get_term(temp_sentence, 1);
 
-    if (depth_str && strlen(depth_str) > 0) {
+    if (depth_str && depth_str[0] != ',') {
         float depth = strtof(depth_str, nullptr);
         update_data(_water_depth, depth);
     }
@@ -277,7 +277,7 @@ bool AP_NMEAMux::decode_dbt(const char *sentence)
 
     const char *depth_m_str = get_term(temp_sentence, 3);
 
-    if (depth_m_str && strlen(depth_m_str) > 0) {
+    if (depth_m_str && depth_m_str[0] != ',') {
         update_data(_water_depth, strtof(depth_m_str, nullptr));
     }
     return true;
@@ -296,10 +296,10 @@ bool AP_NMEAMux::decode_vhw(const char *sentence)
     float speed = 0;
     bool valid = false;
 
-    if (speed_k_str && strlen(speed_k_str) > 0) {
+    if (speed_k_str && speed_k_str[0] != ',') {
         speed = strtof(speed_k_str, nullptr) * 0.277778f; // km/h to m/s
         valid = true;
-    } else if (speed_n_str && strlen(speed_n_str) > 0) {
+    } else if (speed_n_str && speed_n_str[0] != ',') {
         speed = strtof(speed_n_str, nullptr) * 0.514444f; // knots to m/s
         valid = true;
     }
