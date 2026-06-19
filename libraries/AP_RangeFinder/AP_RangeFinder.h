@@ -185,6 +185,7 @@ public:
 #if AP_RANGEFINDER_HEXSOONRADAR_ENABLED
         HEXSOON_RADAR = 44,
 #endif
+        NMEAMUX = 45,
 #if AP_RANGEFINDER_SIM_ENABLED
         SIM = 100,
 #endif
