@@ -13,8 +13,8 @@ extern const AP_HAL::HAL& hal;
 AP_RPM_ABLIC::AP_RPM_ABLIC(AP_RPM &comp, uint8_t instance, AP_RPM::RPM_State &_state) :
     AP_RPM_Backend(comp, instance, _state)
 {
-    // ABLIC S-35770 is typically on I2C bus 1 or 2 (we could use parameters to configure bus, using 1 here for default)
-    _dev = std::move(hal.i2c_mgr->get_device(1, I2C_ADDR));
+    // ABLIC S-35770 is typically on I2C bus 1 or 2 (we could use parameters to configure bus, using 3 here for default)
+    _dev = std::move(hal.i2c_mgr->get_device(3, I2C_ADDR));
     if (!_dev) {
         return;
     }
