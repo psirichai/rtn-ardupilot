@@ -71,7 +71,6 @@ SCHED_TASK_CLASS arguments:
  */
 const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     //         Function name,          Hz,     us,
-    SCHED_TASK_CLASS(CustomBoat,          &custom_boat,            update,         50,   500, 150),
     SCHED_TASK(read_radio,             50,    200,   3),
     SCHED_TASK(ahrs_update,           400,    400,   6),
 #if AP_RANGEFINDER_ENABLED
@@ -141,6 +140,7 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
 #if AP_ROVER_ADVANCED_FAILSAFE_ENABLED
     SCHED_TASK(afs_fs_check,           10,    200, 129),
 #endif
+    SCHED_TASK_CLASS(CustomBoat,          &custom_boat,            update,         50,   500, 150),
 };
 
 

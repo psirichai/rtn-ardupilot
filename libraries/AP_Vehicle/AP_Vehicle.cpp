@@ -503,8 +503,6 @@ void AP_Vehicle::setup()
     nmea.init();
 #endif
 
-    nmeamux.init();
-
 #if AP_FENCE_ENABLED
     fence.init();
 #endif
@@ -538,6 +536,9 @@ void AP_Vehicle::setup()
 #if AP_IBUS_TELEM_ENABLED
     ibus_telem.init();
 #endif
+
+    // Late initialization for NMEA Mux to avoid boot-time blocking/internal errors
+    nmeamux.init();
 }
 
 void AP_Vehicle::loop()

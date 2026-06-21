@@ -9,9 +9,6 @@ static void failsafe_check_static()
 void Rover::init_ardupilot()
 {
 
-    // Initialize Custom Boat hardware
-    custom_boat.init();
-
     // initialise notify system
     notify.init();
     notify_mode(control_mode);
@@ -159,6 +156,9 @@ void Rover::init_ardupilot()
     if (is_boat()) {
         rover.g2.mis_done_behave.set_default(uint8_t(ModeAuto::DoneBehaviour::LOITER));
     }
+
+    // Initialize Custom Boat hardware as the very last step to avoid boot blocking
+    custom_boat.init();
 
     // flag that initialisation has completed
     initialised = true;
