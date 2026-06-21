@@ -98,7 +98,6 @@ COMMON_VEHICLE_DEPENDENT_LIBRARIES = [
     'AP_LandingGear',
     'AP_RobotisServo',
     'AP_NMEA_Output',
-    'AP_NMEAMux',
     'AP_OSD',
     'AP_Filesystem',
     'AP_ADSB',

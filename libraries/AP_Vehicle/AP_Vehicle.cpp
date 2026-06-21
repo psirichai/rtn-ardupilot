@@ -616,7 +616,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
 #if HAL_NMEA_OUTPUT_ENABLED
     SCHED_TASK_CLASS(AP_NMEA_Output, &vehicle.nmea,         update,                   50, 50, 180),
 #endif
-    SCHED_TASK_CLASS(AP_NMEAMux,   &vehicle.nmeamux,        update,                    1, 50, 185),
+    SCHED_TASK_CLASS(AP_NMEAMux,   &vehicle.nmeamux,        update,                   50, 50, 185),
 #if HAL_RUNCAM_ENABLED
     SCHED_TASK_CLASS(AP_RunCam,    &vehicle.runcam,         update,                   50, 50, 200),
 #endif
