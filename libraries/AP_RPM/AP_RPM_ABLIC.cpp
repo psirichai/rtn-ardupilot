@@ -47,7 +47,7 @@ void AP_RPM_ABLIC::_timer(void)
         _dev->transfer(reset_cmd, sizeof(reset_cmd), nullptr, 0);
 
         // Convert 1 second pulse count to RPM
-        float rpm = count * 60.0f;
+        float rpm = count * 10.0f;
 
         state.rate_rpm = rpm;
         state.last_reading_ms = AP_HAL::millis();
