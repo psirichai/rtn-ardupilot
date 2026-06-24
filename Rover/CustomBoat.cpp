@@ -23,10 +23,10 @@ CustomBoat::CustomBoat() :
 
 void CustomBoat::init()
 {
-    // Initialize I2C devices on Bus 1 safely after HAL boot
-    _dev_ads1115 = std::move(hal.i2c_mgr->get_device(1, 0x48));
-    _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(1, 0x21));
-    _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(1, 0x20));
+    // Initialize I2C devices on Bus 3 (I2C A port) safely after HAL boot
+    _dev_ads1115 = std::move(hal.i2c_mgr->get_device(3, 0x48));
+    _dev_tca9534_a = std::move(hal.i2c_mgr->get_device(3, 0x21));
+    _dev_tca9534_b = std::move(hal.i2c_mgr->get_device(3, 0x20));
 
     if (_dev_tca9534_a && _dev_tca9534_a->get_semaphore()->take(10)) {
         // Set outputs high (OFF for P-Channel) BEFORE changing direction to prevent flicker
